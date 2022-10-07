@@ -39,7 +39,8 @@ export const verifications = functions.https.onRequest(
         console.log(message);
         response.send("OK");
       } catch (error: unknown) {
-        console.log(error)
+        console.log(error);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         response.status(500).send(error?.message || "Error");
       }

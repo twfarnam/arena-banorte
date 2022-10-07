@@ -1,10 +1,13 @@
 import styled from 'styled-components'
 
-export default styled.button<{ $isLoading: boolean }>`
+export default styled.button<{ $isLoading?: boolean }>`
   font-family: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
   color: inherit;
   cursor: pointer;
-  padding: 20px 30px;
+  padding: 18px 20px;
+  line-height: 1;
   background: linear-gradient(180deg, #5F5291 0%, #312A4E 100%);
   border: 1px solid rgba(255, 255, 255, 0.19);
   border-radius: 8px;

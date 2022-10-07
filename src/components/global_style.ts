@@ -9,8 +9,20 @@ export default createGlobalStyle`
     background: ${(props) => props.theme.background};
     color: ${(props) => props.theme.foreground};
     font-family: Jefith, sans-serif;
-    font-size: 13px;
+    font-size: 16px;
     box-sizing: border-box;
+  }
+
+  @media (min-width: 1000px) {
+    html {
+      font-size: 20px;
+    }
+  }
+
+  @media (min-width: 1300px) {
+    html {
+      font-size: 25px;
+    }
   }
 
   body {
@@ -20,6 +32,10 @@ export default createGlobalStyle`
 
   a {
     color: inherit;
+  }
+
+  h1 {
+    font-weight: normal;
   }
 
   a:hover {

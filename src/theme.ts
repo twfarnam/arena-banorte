@@ -1,6 +1,7 @@
 const theme = {
   background: '#ec2340',
   foreground: 'white',
+  errorColor: '#03dcc5',
 }
 
 export { theme as default }
