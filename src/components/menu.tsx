@@ -1,12 +1,16 @@
 import React from 'react'
 import styled from 'styled-components'
+import { intervalToDuration, formatDuration } from 'date-fns'
+import locale from 'date-fns/locale/es'
 import { AppPage } from './app'
+import triviaData  from '../trivia_data'
 // @ts-ignore
 import questionMarks from '../assets/question-marks.png?webp'
 // @ts-ignore
 import game from '../assets/game.png?webp'
 // @ts-ignore
 import star from '../assets/star.svg'
+import useForceUpdate from '../hooks/use_force_update'
 
 const MenuBase = styled.div`
   width: 80%;
@@ -80,14 +84,63 @@ interface MenuProps {
   onSetPage: (page: AppPage) => void
 }
 
+function getTime(): number {
+  const params = new URLSearchParams(location.search)
+  return !params.get('date')
+    ? Date.now()
+    : (
+        new Date(params.get('date')!).getTime() +
+        new Date().getTimezoneOffset() * 60 * 1000 +
+        parseFloat(params.get('hour') || '0') * 60 * 60 * 1000 +
+        parseFloat(params.get('minute') || '0') * 60 * 1000 +
+        parseFloat(params.get('second') || '0') * 1000 +
+        Math.round(performance.now())
+      )
+}
+
 export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
+  const forceUpdate = useForceUpdate()
+  const tenMinutes = 10 * 60 * 1000
+  const triviaOpen = triviaData.find(
+    q => (
+      q.startAt.getTime() < getTime() + 1000 &&
+      getTime() - q.startAt.getTime() < tenMinutes
+    )
+  )
+  const nextTrivia = triviaData.find(
+    q => q.startAt.getTime() > getTime()
+  )
+
+  React.useEffect(() => {
+    const timer = setInterval(forceUpdate, 500)
+    return () => clearInterval(timer)
+  })
+
   return (
     <MenuBase>
       <Row>
-        <Option onClick={() => onSetPage('trivia')}>
+        <Option onClick={() => triviaOpen && onSetPage('trivia')}>
           <Icon src={questionMarks} />
           <Circle />
-          <Title>Trivia</Title>
+          { triviaOpen
+            ? <Title>
+                Trivia abierta
+                <br />
+                ¡Juega ahora!
+              </Title>
+            : nextTrivia
+            ? <Title>
+                Siguiente trivia en:{' '}
+                { formatDuration(
+                    intervalToDuration({ start: getTime(), end: nextTrivia.startAt }),
+                    { locale }
+                  )
+                }
+              </Title>
+            : <Title>
+                La ultimá tivia ya se terminó
+              </Title>
+          }
         </Option>
         <Option onClick={() => onSetPage('game')}>
           <Icon src={game} />

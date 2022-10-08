@@ -1,9 +1,9 @@
-interface TriviaSet {
-  startDate: Date
+export interface TriviaSet {
+  startAt: Date
   questions: TriviaQuestion[]
 }
 
-interface TriviaQuestion {
+export interface TriviaQuestion {
   prompt: string
   responses: string[]
   answer: number
@@ -12,7 +12,7 @@ interface TriviaQuestion {
 export default [
   // Trivia 1 Miércoles 9:00 am 
   {
-    startDate: new Date(1665583200000),
+    startAt: new Date(1665583200000),
     questions: [
       {
         prompt: '¿Cuál es el nombre de nuestro Producto?',
@@ -36,7 +36,7 @@ export default [
   },
   // Trivia 2 Miércoles 3:00 pm 
   {
-    startDate: new Date(1665604800000),
+    startAt: new Date(1665604800000),
     questions: [
       {
         prompt: '¿Cuál es el nombre de nuestra plataforma online?',
@@ -60,7 +60,7 @@ export default [
   },
   // Trivia 3 Miércoles 9:00 pm 
   {
-    startDate: new Date(1665626400000),
+    startAt: new Date(1665626400000),
     questions: [
       {
         prompt: '¿Cuál es el rango de edad permitida para un crédito hipotecario?',
@@ -84,7 +84,7 @@ export default [
   },
   // Trivia 4 Jueves 9:00 am 
   {
-    startDate: new Date(1665669600000),
+    startAt: new Date(1665669600000),
     questions: [
       {
         prompt: '¿Cuál es el costo de la comisión de apertura para el destino de Mejora de Hipoteca?',
@@ -108,7 +108,7 @@ export default [
   },
   // Trivia 5 Jueves 3:00 pm 
   {
-    startDate: new Date(1665691200000),
+    startAt: new Date(1665691200000),
     questions: [
       {
         prompt: '¿Cuál es el periodo mínimo que debes considerar para colocar una Mejora de Hipoteca, después de la Originación inicial, cuando el destino origen es Adquisición?',
@@ -132,7 +132,7 @@ export default [
   },
   // Trivia 6 Jueves 9:00 pm 
   {
-    startDate: new Date(1665712800000),
+    startAt: new Date(1665712800000),
     questions: [
       {
         prompt: '¿Cuáles son los decretos que pueden obtener en una precalificación?',
@@ -156,7 +156,7 @@ export default [
   },
   // Trivia 7 Viernes 9:00 am
   {
-    startDate: new Date(1665756000000),
+    startAt: new Date(1665756000000),
     questions: [
       {
         prompt: '¿Cuántas veces ha llegado México al quinto partido?',
@@ -180,7 +180,7 @@ export default [
   },
   // Trivia 8 Viernes 1:00 pm
   {
-    startDate: new Date(1665770400000),
+    startAt: new Date(1665770400000),
     questions: [
       {
         prompt: '¿Cuántas copas ORO ha ganado México en la historia?',
@@ -204,7 +204,7 @@ export default [
   },
   // Trivia 9 Viernes 5:00 pm
   {
-    startDate: new Date(1665781200000),
+    startAt: new Date(1665781200000),
     questions: [
       {
         prompt: '¿De dónde es originario Checo Pérez?',

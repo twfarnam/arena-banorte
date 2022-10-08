@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 
-export default styled.input<{ $hasError?: boolean }>`
+export default styled.input<{ $hasError?: boolean, $hasValue?: boolean }>`
   display: block;
-  width: 80%;
+  width: 100%;
   font-family: inherit;
   font-size: 1.2rem;
   line-height: 1;
@@ -13,6 +13,7 @@ export default styled.input<{ $hasError?: boolean }>`
   border-radius: 8px;
   margin: 0 auto 20px;
   text-align: center;
+  appearance: none;
 
   &:disabled {
     opacity: 0.2;
@@ -22,5 +23,6 @@ export default styled.input<{ $hasError?: boolean }>`
     color: #999;
   }
 
+  ${props => typeof props.$hasValue != 'undefined' && !props.$hasValue ? `color: #999;` : ''}
   ${props => props.$hasError ? `border-color: ${props.theme.errorColor};` : ''}
 `
