@@ -17,5 +17,6 @@
     "jsx": "react-jsx"
   },
   "include": ["src"],
+  "exclude": ["src/pacman/mapData"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

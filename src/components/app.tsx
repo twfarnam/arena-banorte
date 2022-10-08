@@ -23,6 +23,11 @@ import lights2x from '../assets/lights.png?&w=1600&webp'
 import GlobalStyle from './global_style'
 import RegistrationForm from './registration_form'
 import ComingSoon from './coming_soon'
+import Menu from './menu'
+import Ready from './ready'
+import Game from './game'
+import Trivia from './trivia'
+import LeaderBoard from './leader_board'
 import theme from '../theme'
 import useForceUpdate from '../hooks/use_force_update'
 
@@ -53,7 +58,10 @@ const AppBase = styled.div`
 `
 
 const Frame = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
   max-width: 800px;
+  min-height: 100vh;
   position: relative;
   margin: 0 auto;
   overflow: hidden;
@@ -87,16 +95,19 @@ const FadeInContainer = styled.div`
 const Ring = styled.img`
   display: block;
   width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: -1;
+`
+
+const Spacer = styled.div`
+  flex-grow: 1;
 `
 
 const Terms = styled.a`
   display: block;
-  position: absolute;
-  bottom: 0.5em;
-  left: 0;
-  right: 0;
   width: fit-content;
-  margin: 0 auto;
+  margin: 10px auto;
   text-decoration: none;
 `
 
@@ -116,10 +127,10 @@ const Lights = styled.img`
   z-index: -2;
 `
 
-// type AppPage = 'ready' | 'menu' | 'trivia' | 'game'
+export type AppPage = 'ready' | 'menu' | 'trivia' | 'game' | 'leader-board'
  
 export default function App(): React.ReactElement {
-  // const [page, setPage] = React.useState<AppPage>('ready')
+  const [page, setPage] = React.useState<AppPage>('ready')
   const [user, setUser] = React.useState<User | null>(null)
   const [loading, setLoading] = React.useState(true)
   const forceUpdate = useForceUpdate()
@@ -142,15 +153,27 @@ export default function App(): React.ReactElement {
             {/* <Luchador src={luchador} /> */}
             <FadeInContainer>
               { (() => {
-                  if (user?.displayName)
-                    return <ComingSoon />
-                  else
+                  if (!user?.displayName) {
                     return <RegistrationForm onSubmit={() => forceUpdate()} />
+                  } else if (page == 'ready' && window.location.search.includes('withGame')) {
+                    return <Ready onPlay={() => setPage('menu')} />
+                  } else if (page == 'ready') {
+                    return <ComingSoon />
+                  } else if (page == 'menu') {
+                    return <Menu onSetPage={setPage} />
+                  } else if (page == 'game') {
+                    return <Game onReturn={() => setPage('menu')} />
+                  } else if (page == 'trivia') {
+                    return <Trivia onReturn={() => setPage('menu')} />
+                  } else if (page == 'leader-board') {
+                    return <LeaderBoard  onReturn={() => setPage('menu')} />
+                  }
                 })()
               }
             </FadeInContainer>
-            <Ring srcSet={`${ring} 1x, ${ring2x} 2x`} />
+            <Spacer />
             <Terms href="#">Términos y Condiciones</Terms>
+            <Ring srcSet={`${ring} 1x, ${ring2x} 2x`} />
             <Background srcSet={`${background} 1x, ${background2x} 2x`} />
             <Lights srcSet={`${lights} 1x, ${lights2x} 2x`} />
           </Frame>
