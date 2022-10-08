@@ -3,10 +3,10 @@ import React from 'react'
 // import { } from '../api'
 
 interface LeaderBoardProps {
-  //
+  onReturn: () => void
 }
 
-export default function LeaderBoard(props: LeaderBoardProps): React.ReactElement  {
+export default function LeaderBoard({ onReturn }: LeaderBoardProps): React.ReactElement  {
   return (
     <>
       LeaderBoard

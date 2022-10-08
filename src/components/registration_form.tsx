@@ -29,6 +29,10 @@ const Welcome = styled.img`
   margin: 0 auto 20px;
 `
 
+const StyledInput = styled(Input)`
+  margin-right: 10px;
+`
+
 const Row = styled.div`
   display: flex;
   flex-flow: row nowrap;
@@ -192,7 +196,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
           competencia y acceder a ella
         </Label>
         <Row>
-          <Input
+          <StyledInput
             autoFocus
             value={phone}
             onChange={onChangePhoneNumber}

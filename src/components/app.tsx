@@ -29,7 +29,6 @@ import Game from './game'
 import Trivia from './trivia'
 import LeaderBoard from './leader_board'
 import theme from '../theme'
-import useForceUpdate from '../hooks/use_force_update'
 
 const AppBase = styled.div`
   min-height: 100vh;
@@ -130,10 +129,9 @@ const Lights = styled.img`
 export type AppPage = 'ready' | 'menu' | 'trivia' | 'game' | 'leader-board'
  
 export default function App(): React.ReactElement {
-  const [page, setPage] = React.useState<AppPage>('ready')
+  const [page, setPage] = React.useState<AppPage>('menu')
   const [user, setUser] = React.useState<User | null>(null)
   const [loading, setLoading] = React.useState(true)
-  const forceUpdate = useForceUpdate()
 
   React.useEffect(() => {
     const auth = getAuth()
@@ -154,10 +152,10 @@ export default function App(): React.ReactElement {
             <FadeInContainer>
               { (() => {
                   if (!user?.displayName) {
-                    return <RegistrationForm onSubmit={() => forceUpdate()} />
+                    return <RegistrationForm onSubmit={() => setPage('ready')} />
                   } else if (page == 'ready' && window.location.search.includes('withGame')) {
                     return <Ready onPlay={() => setPage('menu')} />
-                  } else if (page == 'ready') {
+                  } else if (page == 'ready' || !window.location.search.includes('withGame')) {
                     return <ComingSoon />
                   } else if (page == 'menu') {
                     return <Menu onSetPage={setPage} />
