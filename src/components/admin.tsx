@@ -44,7 +44,7 @@ export default function Admin(): React.ReactElement | null {
     if (!confirmTwice) return
     setIsLoading(true)
     try {
-      connectFunctionsEmulator(getFunctions(), "localhost", 5001);
+      // connectFunctionsEmulator(getFunctions(), "localhost", 5001);
       const result = await httpsCallable(getFunctions(), 'broadcast')({ body })
       console.log('result', result)
       setBody('')
