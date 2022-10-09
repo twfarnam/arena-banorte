@@ -49,11 +49,12 @@ const Frame = styled.div`
   display: flex;
   flex-flow: column nowrap;
   height: 100vh;
+  min-height: 800px;
   margin: 0 auto;
   position: relative;
   overflow: scroll;
 
-  @media (min-aspect-ratio: 9/16) {
+  @media (min-width: 700px) {
     aspect-ratio: 9/16;
   }
 `
