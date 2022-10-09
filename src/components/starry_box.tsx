@@ -1,56 +1,80 @@
 import React from 'react'
 import styled from 'styled-components'
+import starryBorder from '../assets/starry_border.svg'
 
 const StarryBoxBase = styled.div`
-  width: 80%;
-  margin: 0 auto;
-  border: 20px solid currentColor;
-  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='white' d='M53.3,92.5c-0.5,0.9-0.5,2.4-1.2,2.9c-0.6-2-1.3-4-2-5.9c-12.6-37.8-3-23.6-39.7-39.7 c42.2-18.1,25.5-3.3,41.9-45.9c0.6,2,1.3,4,2,5.9C66.8,47.6,57.5,33.5,94,49.5C56.3,66.3,66.9,52.1,53.3,92.5z'/%3E%3C/svg%3E%0A");
-  border-image-slice: 1000;
-  border-image-repeat: repeat;
+  margin: 0 auto 40px;
+  padding: 8px 4px;
+  border: 12px solid currentColor;
+  border-image-source: url(${starryBorder});
+  border-image-slice: 20%;
+  border-image-width: 10px;
+  border-image-repeat: round;
 `
 
 const Top = styled.div`
-  font-size: 4rem;
-  border-bottom: 8px double currentColor;
+  font-size: var(--top-font-size);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 4px solid currentColor;
+  position: relative;
+  text-align: center;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: 6px;
+    left: 0; 
+    border-bottom: 4px solid currentColor;
+  }
 `
 
 const Row = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
-  font-size: 1.2rem;
+  margin-top: 10px;
   text-align: justify;
   text-align-last: justify;
-  margin-top: 10px;
 `
 
 const Left = styled.div`
   width: 50%;
-  padding: 10px;
+  padding-right: 10px;
   border-right: 1px solid currentColor;
 `
 
 
 const Right = styled.div`
   width: 50%;
-  padding: 10px;
+  padding-left: 10px;
+  text-align: justify;
+  text-align-last: justify;
 `
 
 interface StarryBoxProps {
+  className?: string
   top: React.ReactNode
-  left: React.ReactNode
-  right: React.ReactNode
+  left?: React.ReactNode
+  right?: React.ReactNode
+  bottom?: React.ReactNode
 }
 
-export default function StarryBox({ top, left, right }: StarryBoxProps): React.ReactElement  {
+export default function StarryBox(
+  { className, top, left, right, bottom }: StarryBoxProps
+): React.ReactElement  {
   return (
-    <StarryBoxBase>
+    <StarryBoxBase className={className}>
       <Top>{top}</Top>
-      <Row>
-        <Left>{left}</Left>
-        <Right>{right}</Right>
-      </Row>
+      { left && right &&
+        <Row>
+          <Left>{left}</Left>
+          <Right>{right}</Right>
+        </Row>
+      }
+      { bottom && <div>{ bottom }</div>}
     </StarryBoxBase>
   )
 }

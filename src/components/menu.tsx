@@ -32,6 +32,10 @@ const Option = styled.div`
   cursor: pointer;
 `
 
+const Container = styled.div<{$isDisabled?: boolean}>`
+  ${props => props.$isDisabled ? 'opacity: 0.5;' : ''}
+`
+
 const Title = styled.div`
   font-size: 1.6rem;
   margin-top: 10px;
@@ -98,15 +102,20 @@ function getTime(): number {
       )
 }
 
-export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
-  const forceUpdate = useForceUpdate()
+export function getOpenTriviaIndex(): number {
   const tenMinutes = 10 * 60 * 1000
-  const triviaOpen = triviaData.find(
+  return triviaData.findIndex(
     q => (
       q.startAt.getTime() < getTime() + 1000 &&
       getTime() - q.startAt.getTime() < tenMinutes
     )
   )
+}
+
+export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
+  const forceUpdate = useForceUpdate()
+  const triviaOpenIndex = getOpenTriviaIndex()
+  const triviaIsOpen = triviaOpenIndex != -1
   const nextTrivia = triviaData.find(
     q => q.startAt.getTime() > getTime()
   )
@@ -115,14 +124,22 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
     const timer = setInterval(forceUpdate, 500)
     return () => clearInterval(timer)
   })
-
+ 
+  const triviaCompleted = 'triviaCompleted' in localStorage
+    ? JSON.parse(localStorage.triviaCompleted)
+    : []
+  const openTriviaIsCompleted = triviaCompleted.includes(triviaOpenIndex)
   return (
     <MenuBase>
       <Row>
-        <Option onClick={() => triviaOpen && onSetPage('trivia')}>
-          <Icon src={questionMarks} />
-          <Circle />
-          { triviaOpen
+        <Option onClick={triviaIsOpen && !openTriviaIsCompleted ? () => onSetPage('trivia') : undefined}>
+          <Container $isDisabled={!triviaIsOpen || openTriviaIsCompleted}>
+            <Icon src={questionMarks} />
+            <Circle />
+          </Container>
+          { openTriviaIsCompleted 
+            ? <Title>Trivia {triviaOpenIndex + 1} ya hecha</Title>
+            : triviaIsOpen
             ? <Title>
                 Trivia abierta
                 <br />

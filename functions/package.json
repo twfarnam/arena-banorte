@@ -17,6 +17,7 @@
   "dependencies": {
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
+    "lodash": "^4.17.21",
     "twilio": "^3.82.2"
   },
   "devDependencies": {

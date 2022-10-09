@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { collection, addDoc, getFirestore, Timestamp } from 'firebase/firestore'
+import { doc, setDoc, getFirestore, serverTimestamp } from 'firebase/firestore'
 import {
   getAuth,
   signInWithPhoneNumber,
@@ -9,13 +9,10 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import officeList from '../office_list'
-// @ts-ignore
-import welcome from '../assets/welcome.png?w=720&webp'
-// @ts-ignore
-import welcome2x from '../assets/welcome.png?w=1440&webp'
 import Button from './button'
 import Error from './error'
 import Input from './input'
+import StarryBox from './starry_box'
 import useForceUpdate from '../hooks/use_force_update'
 
 const emailRegex =
@@ -27,14 +24,11 @@ const RegistrationFormBase = styled.form`
   margin: 20px auto 10px;
 `
 
-const Welcome = styled.img`
-  display: block;
-  width: 90%;
-  margin: 0 auto 20px;
-`
-
 const StyledInput = styled(Input)`
   margin-right: 10px;
+`
+const StyledStarryBox = styled(StarryBox)`
+  --top-font-size: 1.2em;
 `
 
 const Row = styled.div`
@@ -178,14 +172,12 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
       setIsLoading(false)
       return 
     }
-    console.log('here!', valid)
     try {
-      await addDoc(collection(getFirestore(), 'registrations'), {
+      await setDoc(doc(getFirestore(), 'users', getAuth().currentUser!.uid), {
         email,
         name,
         office,
-        createdAt: Timestamp.now(),
-        uid: getAuth().currentUser?.uid,
+        createdAt: serverTimestamp(),
       })
       await updateProfile(getAuth().currentUser!, { displayName: name })
       onSubmit()
@@ -200,7 +192,11 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
   if (!confirmationResult) {
     return (
       <RegistrationFormBase onSubmit={onSubmitPhoneForm}>
-        <Welcome srcSet={`${welcome} 1x, ${welcome2x} 2x`} />
+        <StyledStarryBox
+          top="¡Bienvenido a Arena Banorte!"
+          left="Muy pronto podrás jugar en este sitio"
+          right="y ganar los premios que tenemos para ti"
+        />
         { error && <Error>{error}</Error>}
         <Label>
           Introduce tu número telefónico para mantenerte al tanto de la
@@ -210,7 +206,10 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
           <StyledInput
             autoFocus
             value={phone}
-            onChange={event => { setPhone(event.target.value); setPhoneError('') }}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setPhone(event.target.value);
+              setPhoneError('')
+            }}
             inputMode="tel"
             placeholder="55-5555-5555"
             autoComplete="tel"

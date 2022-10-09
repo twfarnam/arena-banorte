@@ -1,6 +1,7 @@
 import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth'
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import '../firebase'
 // @ts-ignore
 import background from '../assets/background.png?w=800&webp'
@@ -19,7 +20,6 @@ import lights from '../assets/lights.png?&w=800&webp'
 // @ts-ignore
 import lights2x from '../assets/lights.png?&w=1600&webp'
 // @ts-ignore
-// import luchador from '../assets/luchador.png?webp'
 import GlobalStyle from './global_style'
 import RegistrationForm from './registration_form'
 import ComingSoon from './coming_soon'
@@ -27,16 +27,15 @@ import Menu from './menu'
 import Ready from './ready'
 import Game from './game'
 import Trivia from './trivia'
+import Admin from './admin'
 import LeaderBoard from './leader_board'
 import theme from '../theme'
 
 const AppBase = styled.div`
   min-height: 100vh;
-  width: 100wh;
-  overflow-hidden;
 
   @keyframes shrink {
-    from { transform: scale(1.2) }
+    from { transform: scale(1.8) }
     to   { transform: none; }
   }
 
@@ -44,51 +43,33 @@ const AppBase = styled.div`
     from { opacity: 0; }
     to   { opacity: 1; }
   }
-
-  @keyframes slide-up {
-    from { transform: translateY(85%); }
-    to   { transform: none; }
-  }
-
-  @keyframes slide-down {
-    from { transform: none; }
-    to   { transform: translateY(85%); }
-  }
 `
 
 const Frame = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  max-width: 800px;
-  min-height: 100vh;
-  position: relative;
+  height: 100vh;
   margin: 0 auto;
-  overflow: hidden;
+  position: relative;
+  overflow: scroll;
+
+  @media (min-aspect-ratio: 9/16) {
+    aspect-ratio: 9/16;
+  }
 `
 
-// const Luchador = styled.img`
-//   position: absolute;
-//   top: 15%;
-//   width: 80%;
-//   left: 0;
-//   right: 0;
-//   margin: 0 auto;
-//   z-index: -1;
-//   /* animation: slide-up 1s ease-out forwards, slide-down 1s 1.5s ease-out forwards; */
-// `
-
-const Logo = styled.img`
+const Logo = styled.img<{ $runAnimation: boolean }>`
   display: block;
   width: 45%;
   margin: 13% auto 5%;
   transform-origin: 50% 0;
-  /* animation: shrink 0.5s 2s ease-out backwards; */
-  animation: shrink 0.5s 0.5s ease-out backwards;
+  animation: shrink 0.2s 0.3s ease-out backwards;
+  animation-play-state: ${props => props.$runAnimation ? 'running' : 'paused'}
 `
 
-const FadeInContainer = styled.div`
-  /* animation: fade-in 0.5s 2.5s ease-out backwards; */
-  animation: fade-in 0.5s 1s ease-out backwards;
+const FadeInContainer = styled.div<{ $runAnimation: boolean }>`
+  animation: fade-in 0.3s 0.3s ease-out backwards;
+  animation-play-state: ${props => props.$runAnimation ? 'running' : 'paused'}
 `
 
 const Ring = styled.img`
@@ -112,8 +93,9 @@ const Terms = styled.a`
 
 const Background = styled.img`
   display: block;
-  position: absolute;
+  position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: -2;
 `
@@ -130,29 +112,47 @@ export type AppPage = 'ready' | 'menu' | 'trivia' | 'game' | 'leader-board'
  
 export default function App(): React.ReactElement {
   const [page, setPage] = React.useState<AppPage>('menu')
-  const [user, setUser] = React.useState<User | null>(null)
+  const [registration, setRegistration] = React.useState<Record<string, any>>()
   const [loading, setLoading] = React.useState(true)
+  const [logoLoaded, setLogoLoaded] = React.useState(false)
+  const [ringLoaded, setRingLoaded] = React.useState(false)
+  const [backgroundLoaded, setBackgroundLoaded] = React.useState(false)
+  const [lightsLoaded, setLightsLoaded] = React.useState(false)
 
   React.useEffect(() => {
-    const auth = getAuth()
-    onAuthStateChanged(auth, (user) => {
-      setUser(user)
+    onAuthStateChanged(getAuth(), async (user) => {
+      if (user) {
+        const snap = await getDoc(doc(getFirestore(), "users", user.uid));
+        setRegistration(snap.data())
+      }
       setLoading(false)
     })
-  })
-
+  }, [])
+  
+  const allLoaded = [ logoLoaded, ringLoaded, backgroundLoaded, lightsLoaded ].every(b => b)
+  if (window.location.pathname == '/admin') {
+    return (
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Admin />
+      </ThemeProvider>
+    )
+  }
   return (
     <ThemeProvider theme={theme}>
       <AppBase>
         <GlobalStyle />
-        { !loading &&
-          <Frame>
-            <Logo srcSet={`${logo} 1x, ${logo2x} 2x`} />
-            {/* <Luchador src={luchador} /> */}
-            <FadeInContainer>
+        <Frame>
+          <Logo
+            $runAnimation={allLoaded}
+            onLoad={() => setLogoLoaded(true)}
+            srcSet={`${logo} 1x, ${logo2x} 2x`}
+          />
+          { !loading &&
+            <FadeInContainer $runAnimation={allLoaded}>
               { (() => {
-                  if (!user?.displayName) {
-                    return <RegistrationForm onSubmit={() => setPage('ready')} />
+                  if (!registration) {
+                    return <RegistrationForm onSubmit={() => { setPage('ready'); setRegistration({}); }} />
                   } else if (page == 'ready' && window.location.search.includes('withGame')) {
                     return <Ready onPlay={() => setPage('menu')} />
                   } else if (page == 'ready' || !window.location.search.includes('withGame')) {
@@ -169,13 +169,22 @@ export default function App(): React.ReactElement {
                 })()
               }
             </FadeInContainer>
-            <Spacer />
-            <Terms href="#">Términos y Condiciones</Terms>
-            <Ring srcSet={`${ring} 1x, ${ring2x} 2x`} />
-            <Background srcSet={`${background} 1x, ${background2x} 2x`} />
-            <Lights srcSet={`${lights} 1x, ${lights2x} 2x`} />
-          </Frame>
-        }
+          }
+          <Spacer />
+          <Terms href="#">Términos y Condiciones</Terms>
+          <Ring
+            onLoad={() => setRingLoaded(true)}
+            srcSet={`${ring} 1x, ${ring2x} 2x`}
+          />
+          <Background
+            onLoad={() => setBackgroundLoaded(true)}
+            srcSet={`${background} 1x, ${background2x} 2x`}
+          />
+          <Lights
+            onLoad={() => setLightsLoaded(true)}
+            srcSet={`${lights} 1x, ${lights2x} 2x`}
+          />
+        </Frame>
       </AppBase>
     </ThemeProvider>
   )

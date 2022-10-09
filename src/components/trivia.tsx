@@ -2,10 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import triviaData, { TriviaQuestion, TriviaSet } from '../trivia_data'
 import isEqual from 'lodash/isEqual'
-import { collection, addDoc, getFirestore } from 'firebase/firestore'
+import { collection, addDoc, getFirestore, serverTimestamp } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 // @ts-ignore
 import questionMarks from '../assets/question-marks.png?webp'
+import { getOpenTriviaIndex } from './menu'
+import ExitButton from './exit_button'
 import Button from './button'
 import StarryBox from './starry_box'
 
@@ -34,15 +36,13 @@ const RightIcon = styled(LeftIcon)`
   transform: scaleY(-1);
 `
 
-const ExitButton = styled.div`
-  margin: 200px 0 20px;
-  font-size: 1.8rem;
-  text-decoration: underline;
-  cursor: pointer;
+const StyledStarryBox = styled(StarryBox)`
+  --top-font-size: 2.2em;
+  max-width: 20rem;
 `
 
 const Score = styled.div`
-  font-size: 2.2em;
+  font-size: 1.6em;
 `
 
 const Question = styled.div`
@@ -66,6 +66,7 @@ const Question = styled.div`
     #900080 115.21%
   );
   border-image-slice: 1;
+  margin-bottom: 50px;
 
   &::before {
     content: '?';
@@ -99,15 +100,16 @@ interface TriviaProps {
 }
 
 export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
-  const triviaSetIndex = 0
-  const questionSet = triviaData[triviaSetIndex]
-  const [question, setQuestion] = React.useState<number>()
+  const triviaDataIndex = getOpenTriviaIndex()
+  if (triviaDataIndex == -1) throw new Error()
+  const triviaSet = triviaData[triviaDataIndex]
+  const [questionIndex, setQuestionIndex] = React.useState<number>()
   const [answers, setAnswers] = React.useState<number[]>([])
   const [startedAt, setStartedAt] = React.useState<number>()
   const [endedAt, setEndedAt] = React.useState<number>()
 
   function onClickStart() {
-    setQuestion(0)
+    setQuestionIndex(0)
     setStartedAt(Date.now())
   }
 
@@ -115,14 +117,21 @@ export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
     return async () => {
       const allAnswers = [...answers, index]
       setAnswers(allAnswers)
-      if (typeof question != 'undefined' && question < 1) {
-        setQuestion(question + 1)
+      if (typeof questionIndex != 'undefined' && questionIndex < 1) {
+        setQuestionIndex(questionIndex + 1)
       } else {
         setEndedAt(Date.now())
+        const triviaCompleted = 'triviaCompleted' in localStorage
+          ? JSON.parse(localStorage.triviaCompleted)
+          : []
+        triviaCompleted.push(triviaDataIndex)
+        localStorage.triviaCompleted = JSON.stringify(triviaCompleted)
         try {
           await addDoc(collection(getFirestore(), 'triviaScores'), {
-            score: calculateScore(questionSet, allAnswers, Date.now() - startedAt!),
+            triviaSet: triviaDataIndex,
+            score: calculateScore(triviaSet, allAnswers, Date.now() - startedAt!),
             uid: getAuth().currentUser?.uid,
+            createdAt: serverTimestamp(),
           })
         } catch (e) {
           console.error("Error adding document: ", e);
@@ -132,26 +141,26 @@ export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
   }
 
   if (endedAt) {
-    const points = calculateScore(questionSet, answers, endedAt - startedAt!).toLocaleString()
+    const points = calculateScore(triviaSet, answers, endedAt - startedAt!).toLocaleString()
     return (
       <TriviaBase>
         <LeftIcon src={questionMarks} />
         <RightIcon src={questionMarks} />
-        <StarryBox
+        <StyledStarryBox
           top="Obtuviste:"
           left={<Score>{points} puntos</Score>}
           right="Mientras más juegues, más posibilidades tienes"
         />
-        <ExitButton onClick={onReturn}>Salir</ExitButton>
+        <ExitButton onReturn={onReturn} />
       </TriviaBase>
     )
-  } else if (typeof question == 'undefined') {
+  } else if (typeof questionIndex == 'undefined') {
     return (
       <TriviaBase>
         <LeftIcon src={questionMarks} />
         <RightIcon src={questionMarks} />
-        <StarryBox
-          top={`Trivia no. ${triviaSetIndex + 1}`}
+        <StyledStarryBox
+          top={`Trivia no. ${triviaDataIndex + 1}`}
           left="Mientras más preguntas acertadas contestes, generas más puntos"
           right="Contesta lo más rápido posible, esto también te genera más puntos"
         />
@@ -165,8 +174,8 @@ export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
       <TriviaBase>
         <LeftIcon src={questionMarks} />
         <RightIcon src={questionMarks} />
-        <Question>{ questionSet.questions[question].prompt }</Question>
-        { questionSet.questions[question].responses.map((r, i) =>
+        <Question>{ triviaSet.questions[questionIndex].prompt }</Question>
+        { triviaSet.questions[questionIndex].responses.map((r, i) =>
             <Response key={r} onClick={onClickResponse(i)} >{r}</Response>
           )
         }
@@ -189,9 +198,9 @@ const scoringMatrix = [
   [60999, 700],
   [fiveYears, 500],
 ]
-function calculateScore(questionSet: TriviaSet, answers: number[], duration: number) {
+function calculateScore(triviaSet: TriviaSet, answers: number[], duration: number) {
   const correct = isEqual(
-    questionSet.questions.map((q: TriviaQuestion) => q.answer),
+    triviaSet.questions.map((q: TriviaQuestion) => q.answer),
     answers,
   )
   if (!correct) return 0

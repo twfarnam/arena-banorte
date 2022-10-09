@@ -1,15 +1,15 @@
 import React from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react-lite'
+import { collection, addDoc, getFirestore, serverTimestamp } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 // @ts-ignore
 import game from '../assets/game.png?webp'
 // @ts-ignore
 import gameButton from '../assets/game_button.png?webp'
-// @ts-ignore
-import gameWelcome from '../assets/game_welcome.png?webp'
-// @ts-ignore
-import gameOver from '../assets/game_over.png?webp'
 import Button from './button'
+import StarryBox from './starry_box'
+import ExitButton from './exit_button'
 import { MinimalGame } from '../pacman/MinimalGame'
 import { Store } from '../pacman/model/Store'
 import { StoreProvider } from '../pacman/components/StoreContext'
@@ -39,16 +39,8 @@ const RightIcon = styled(LeftIcon)`
   transform: scaleX(-1);
 `
 
-const GameMessage = styled.img`
-  width: 80%;
-  margin: 30px auto 80px;
-`
-
-const ExitButton = styled.div`
-  margin: 200px 0 20px;
-  font-size: 1.8rem;
-  text-decoration: underline;
-  cursor: pointer;
+const StyledStarryBox = styled(StarryBox)`
+  max-width: 18rem;
 `
 
 const GameContainer = styled.div`
@@ -124,6 +116,17 @@ const DownButton = styled(GameButton)`
   }
 `
 
+const GameOverHeader = styled.div`
+  display: block;
+  width: 100%;
+  font-size: 2em;
+  text-align-last: center;
+`
+
+const GameOverPoints = styled.div`
+  font-size: 1.5em;
+`
+
 interface GameProps {
   onReturn: () => void
 }
@@ -143,7 +146,11 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
 
   React.useEffect(() => {
     if (!store.game.gameOver) return
-    console.log('game over')
+    addDoc(collection(getFirestore(), 'pacManScores'), {
+      score: 50,
+      uid: getAuth().currentUser?.uid,
+      createdAt: serverTimestamp(),
+    }).catch(error => console.log(error))
     setTimeout(() => setPage('over'), 300)
   }, [store.game.gameOver])
 
@@ -166,7 +173,10 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
       <GameBase>
         <LeftIcon src={game} />
         <RightIcon src={game} />
-        <GameMessage src={gameWelcome} />
+        <StyledStarryBox
+          top="Acumula la mayor cantidad de puntos posible"
+          bottom="Utiliza los controles para guiar a tu luchador y comer la mayor cantidad de puntos posibles"
+        />
         <Button onClick={() => { setPage('playing'); setTimeout(resizeGame); }}>
           Comenzar a jugar
         </Button>
@@ -177,11 +187,15 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
       <GameBase>
         <LeftIcon src={game} />
         <RightIcon src={game} />
-        <GameMessage src={gameOver} />
+        <StyledStarryBox
+          top={<GameOverHeader>Obtuviste:</GameOverHeader>}
+          left={<GameOverPoints>50 puntos</GameOverPoints>}
+          right="Mientras más juegues, más posibilidades tienes"
+        />
         <Button onClick={() => { setPage('playing'); store.resetGame(); }}>
           Volver a jugar
         </Button>
-        <ExitButton onClick={onReturn}>Salir</ExitButton>
+        <ExitButton onReturn={onReturn} />
       </GameBase>
     )
   } else {
