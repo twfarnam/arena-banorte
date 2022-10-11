@@ -43,7 +43,7 @@ export default function Admin(): React.ReactElement | null {
   const [body, setBody] = React.useState('')
   const [error, setError] = React.useState('')
   const [result, setResult] = React.useState('')
-  const [scores, setScores] = React.useState()
+  const [scores, setScores] = React.useState<{}[]>()
 
   React.useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
@@ -52,6 +52,7 @@ export default function Admin(): React.ReactElement | null {
       setHasPermission(admin.exists())
       try {
         const result = await httpsCallable(getFunctions(), 'leaderBoard')()
+        // @ts-ignore
         setScores(result.data)
       } catch (error) {
         console.log(error)
@@ -106,7 +107,7 @@ export default function Admin(): React.ReactElement | null {
               </tr>
             </thead>
             <tbody>
-              { scores.map(u => 
+              { scores.map((u: any) => 
                 <tr key={u.name}>
                   <td>{u.name}</td>
                   <td>{u.phone}</td>

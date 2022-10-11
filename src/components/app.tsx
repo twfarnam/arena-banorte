@@ -110,6 +110,7 @@ export default function App(): React.ReactElement {
       setLoading(false)
       // connectFunctionsEmulator(getFunctions(), "localhost", 5001);
       const result = await httpsCallable(getFunctions(), 'score')()
+      // @ts-ignore
       setScore(result.data)
     })
   }, [])

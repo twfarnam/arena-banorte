@@ -91,11 +91,7 @@ const Image  = styled.img`
   width: 60%;
 `
 
-interface PrizesProps {
-  onReturn: () => void
-}
-
-const prizes = {
+const prizes: { [name: string]: string } = {
   'Certificado de regalo': giftcard,
   'Cafetera nespresso essenza mini': espreso,
   'Audífonos sony inalámbricos': headphones,
@@ -106,7 +102,7 @@ const prizes = {
   'Maleta adidas banorte': maleta,
 }
 
-export default function Prizes({ onReturn }: PrizesProps): React.ReactElement  {
+export default function PrizesModal(): React.ReactElement  {
   const [showModal, setShowModal] = React.useState<boolean>(false)
   const iconAnimationRef = React.useRef<HTMLDivElement>(null)
 

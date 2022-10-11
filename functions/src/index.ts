@@ -31,7 +31,7 @@ export const score = functions.https.onCall(
       const pacManTotal = pacManScores
           .docs
           .reduce((sum, item) => sum + item.data().score, 0);
-      return triviaTotal + pacManTotal
+      return triviaTotal + pacManTotal;
     },
 );
 
@@ -94,6 +94,7 @@ export const broadcast = functions.https.onCall(
     }
 );
 
+// eslint-disable-next-line require-jsdoc
 async function requireAdmin(
     context: functions.https.CallableContext,
 ): Promise<boolean> {
