@@ -17,6 +17,10 @@ import maleta from '../assets/maleta.png?webp'
 import playstation from '../assets/playstation.png?webp'
 // @ts-ignore
 import xbox from '../assets/xbox.png?webp'
+// @ts-ignore
+import watch from '../assets/watch.jpeg?webp'
+// @ts-ignore
+import tv from '../assets/tv.jpeg?webp'
 
 const PrizesBase = styled.div`
   text-align: center;
@@ -92,6 +96,8 @@ const Image  = styled.img`
 `
 
 const prizes: { [name: string]: string } = {
+  'Apple Watch Series 8': watch,
+  'Pantalla LG Smart TV de 50 pulgadas 4k': tv,
   'Certificado de regalo': giftcard,
   'Cafetera nespresso essenza mini': espreso,
   'Audífonos sony inalámbricos': headphones,

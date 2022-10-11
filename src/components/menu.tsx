@@ -201,7 +201,7 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
           <WhiteCircle>
             <div ref={videoTwoAnimationRef} />
           </WhiteCircle>
-          <Title>Seguro hipotecario</Title>
+          <Title>Seguros Banorted</Title>
         </Option>
       </Row>
     </MenuBase>

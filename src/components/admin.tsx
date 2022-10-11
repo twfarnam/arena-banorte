@@ -14,6 +14,8 @@ const AdminBase = styled.div`
   background-image: url("${background}");
   background-size: 100%;
   overflow: scroll;
+  max-width: 800px;
+  margin: 0 auto;
 
   h1 {
     text-align: center;
@@ -30,6 +32,7 @@ const Textarea = styled.textarea`
 const Table = styled.table`
   font-size: 1.3em;
   margin: 0 auto;
+  margin-top: 100px;
 
   td {
     padding: 5px 10px;
@@ -96,7 +99,7 @@ export default function Admin(): React.ReactElement | null {
       </Button>
       { result && <h1>Sent {result} messages</h1> }
       { !scores
-        ? <div>Loading...</div>
+        ? <Table as="div">Loading...</Table>
         : <Table>
             <thead>
               <tr>

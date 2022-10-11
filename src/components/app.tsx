@@ -129,7 +129,7 @@ export default function App(): React.ReactElement {
         <GlobalStyle />
         <Frame>
           {!videoDone && <VideoOverlay onDone={() => setVideoDone(true)} />}
-          {score > 0 && <Score>{score}</Score>}
+          {score > 0 && <Score>Tienes {score} puntos</Score>}
           <Logo
             $runAnimation={videoDone}
             srcSet={`${logo} 1x, ${logo2x} 2x`}
