@@ -49,8 +49,6 @@ export default function Admin(): React.ReactElement | null {
       const result = await httpsCallable(getFunctions(), 'broadcast')({ body })
       // @ts-ignore
       setResult(result.data.numberOfUsersMessaged)
-      console.log('result', result.data.numberOfUsersMessaged)
-
       setBody('')
     } catch (error: any) {
       console.log(error)

@@ -272,7 +272,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
             $hasValue={!!office}
             as="select"
             value={office}
-            onChange={event => { setOffice(event.target.value); setOfficeError('') }}>
+            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => { setOffice(event.target.value); setOfficeError('') }}>
             <option value="" disabled>Oficina a la que perteneces</option>
             { officeList.map(office => <option key={office}>{office}</option>) }
           </Input>
