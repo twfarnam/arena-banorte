@@ -13,6 +13,11 @@ const AdminBase = styled.div`
   padding: 20px;
   background-image: url("${background}");
   background-size: 100%;
+  overflow: scroll;
+
+  h1 {
+    text-align: center;
+  }
 `
 
 const Textarea = styled.textarea`
@@ -22,18 +27,35 @@ const Textarea = styled.textarea`
   margin-bottom: 30px;
 `
 
+const Table = styled.table`
+  font-size: 1.3em;
+  margin: 0 auto;
+
+  td {
+    padding: 5px 10px;
+  }
+`
+
+// connectFunctionsEmulator(getFunctions(), "localhost", 5001);
 export default function Admin(): React.ReactElement | null {
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasPermission, setHasPermission] = React.useState(false)
   const [body, setBody] = React.useState('')
   const [error, setError] = React.useState('')
   const [result, setResult] = React.useState('')
+  const [scores, setScores] = React.useState()
 
   React.useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
       if (!user) return
       const admin = await getDoc(doc(getFirestore(), "admins", user.uid))
       setHasPermission(admin.exists())
+      try {
+        const result = await httpsCallable(getFunctions(), 'leaderBoard')()
+        setScores(result.data)
+      } catch (error) {
+        console.log(error)
+      }
     })
   }, [])
 
@@ -45,7 +67,6 @@ export default function Admin(): React.ReactElement | null {
     if (!confirmTwice) return
     setIsLoading(true)
     try {
-      // connectFunctionsEmulator(getFunctions(), "localhost", 5001);
       const result = await httpsCallable(getFunctions(), 'broadcast')({ body })
       // @ts-ignore
       setResult(result.data.numberOfUsersMessaged)
@@ -73,6 +94,29 @@ export default function Admin(): React.ReactElement | null {
         Broadcast SMS
       </Button>
       { result && <h1>Sent {result} messages</h1> }
+      { !scores
+        ? <div>Loading...</div>
+        : <Table>
+            <thead>
+              <tr>
+                <td>User</td>
+                <td>Email</td>
+                <td>Phone</td>
+                <td>Score</td>
+              </tr>
+            </thead>
+            <tbody>
+              { scores.map(u => 
+                <tr key={u.name}>
+                  <td>{u.name}</td>
+                  <td>{u.phone}</td>
+                  <td>{u.email}</td>
+                  <td>{u.score.toLocaleString()}</td>
+                </tr>)
+              }
+            </tbody>
+          </Table>
+        }
     </AdminBase>
   )
 }

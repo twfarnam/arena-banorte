@@ -19,7 +19,7 @@ interface VideoProps {
 export default function Video({ src, onReturn }: VideoProps): React.ReactElement  {
   return (
     <VideoBase>
-      <Player autoPlay controls src={src} />
+      <Player autoPlay controls src={src} playsInline />
       <ExitButton onReturn={onReturn} />
     </VideoBase>
   )

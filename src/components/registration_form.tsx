@@ -11,6 +11,7 @@ import {
 import officeList from '../office_list'
 import Button from './button'
 import Error from './error'
+import PrizesModal from './prizes_modal'
 import Input from './input'
 import StarryBox from './starry_box'
 import useForceUpdate from '../hooks/use_force_update'
@@ -20,13 +21,14 @@ const emailRegex =
 
 const RegistrationFormBase = styled.form`
   text-align: center;
-  width: 60%;
+  width: 80%;
   margin: 20px auto 10px;
 `
 
 const StyledInput = styled(Input)`
   margin-right: 10px;
 `
+
 const StyledStarryBox = styled(StarryBox)`
   --top-font-size: 1.2em;
 `
@@ -35,6 +37,7 @@ const Row = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-start;
+  margin-bottom: 30px;
 `
 
 const Label = styled.label`
@@ -198,8 +201,8 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
         />
         { error && <Error>{error}</Error>}
         <Label>
-          Introduce tu número telefónico para mantenerte al tanto de la
-          competencia y acceder a ella
+          Introduce tu número celular para verificar tu registro y mantenerte
+          al tanto de las dinámicas.
         </Label>
         <Row>
           <StyledInput
@@ -217,6 +220,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
           <div ref={recaptchaRef}></div>
           <Button $isLoading={isLoading}>Enviar</Button>
         </Row>
+        <PrizesModal />
         { phoneError && <Error>{phoneError}</Error>}
       </RegistrationFormBase>
     )

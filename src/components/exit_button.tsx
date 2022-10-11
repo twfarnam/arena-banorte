@@ -8,9 +8,16 @@ const ExitButtonBase = styled.div`
 `
 
 interface ExitButtonProps {
+  className?: string
   onReturn: () => void
 }
 
-export default function ExitButton({ onReturn }: ExitButtonProps) {
-  return <ExitButtonBase onClick={onReturn}>Salir</ExitButtonBase>
+export default function ExitButton({ className, onReturn }: ExitButtonProps) {
+  return (
+    <ExitButtonBase
+      className={className}
+      onClick={onReturn}>
+      Salir
+    </ExitButtonBase>
+  )
 }

@@ -128,13 +128,15 @@ const GameOverPoints = styled.div`
 `
 
 interface GameProps {
+  onPoints: (points: number) => void
   onReturn: () => void
 }
 
 type GamePage = 'welcome' | 'playing' | 'over'
 
-export default observer(function Game({ onReturn }: GameProps): React.ReactElement  {
+export default observer(function Game({ onPoints, onReturn }: GameProps): React.ReactElement  {
   const [page, setPage] = React.useState<GamePage>('welcome')
+  const [score, setScore] = React.useState<number>(0)
   const store = React.useMemo(() => new Store(), [])
   const gameContainerRef = React.useRef<HTMLDivElement>(null)
 
@@ -146,12 +148,15 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
 
   React.useEffect(() => {
     if (!store.game.gameOver) return
+    const points = store.game.pacMan.alive ? 50 : 0
+    onPoints(points)
+    setScore(score)
     addDoc(collection(getFirestore(), 'pacManScores'), {
-      score: 50,
+      score,
       uid: getAuth().currentUser?.uid,
       createdAt: serverTimestamp(),
     }).catch(error => console.log(error))
-    setTimeout(() => setPage('over'), 300)
+    setTimeout(() => setPage('over'), 600)
   }, [store.game.gameOver])
 
   function resizeGame() {
@@ -189,7 +194,7 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
         <RightIcon src={game} />
         <StyledStarryBox
           top={<GameOverHeader>Obtuviste:</GameOverHeader>}
-          left={<GameOverPoints>50 puntos</GameOverPoints>}
+          left={<GameOverPoints>{score} puntos</GameOverPoints>}
           right="Mientras más juegues, más posibilidades tienes"
         />
         <Button onClick={() => { setPage('playing'); store.resetGame(); }}>
@@ -216,6 +221,7 @@ export default observer(function Game({ onReturn }: GameProps): React.ReactEleme
           </div>
           <RightButton onClick={() => store.game.pacMan.nextDirection = 'RIGHT'}/>
         </Controls>
+        <ExitButton onReturn={onReturn} />
       </GameBase>
     )
   }

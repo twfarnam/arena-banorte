@@ -96,10 +96,11 @@ const Response = styled.div`
 `
 
 interface TriviaProps {
+  onPoints: (points: number) => void
   onReturn: () => void
 }
 
-export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
+export default function Trivia({ onPoints, onReturn }: TriviaProps): React.ReactElement  {
   const triviaDataIndex = getOpenTriviaIndex()
   if (triviaDataIndex == -1) throw new Error()
   const triviaSet = triviaData[triviaDataIndex]
@@ -127,9 +128,11 @@ export default function Trivia({ onReturn }: TriviaProps): React.ReactElement  {
         triviaCompleted.push(triviaDataIndex)
         localStorage.triviaCompleted = JSON.stringify(triviaCompleted)
         try {
+          const score = calculateScore(triviaSet, allAnswers, Date.now() - startedAt!)
+          onPoints(score)
           await addDoc(collection(getFirestore(), 'triviaScores'), {
+            score,
             triviaSet: triviaDataIndex,
-            score: calculateScore(triviaSet, allAnswers, Date.now() - startedAt!),
             uid: getAuth().currentUser?.uid,
             createdAt: serverTimestamp(),
           })

@@ -5,6 +5,7 @@ import locale from 'date-fns/locale/es'
 import lottie from 'lottie-web'
 import { AppPage } from './app'
 import triviaData  from '../trivia_data'
+import PrizesModal from './prizes_modal'
 // @ts-ignore
 import questionMarks from '../assets/question-marks.png?webp'
 // @ts-ignore
@@ -25,24 +26,10 @@ const Row = styled.div`
   align-items: flex-start;
 `
 
-const SmallRow = styled(Row)`
-  justify-content: space-around;
-  margin: 30px 0;
-`
-
 const Option = styled.div`
   width: 40%;
   position: relative;
   cursor: pointer;
-`
-
-const SmallOption = styled(Option)`
-  width: 20%;
-`
-
-const Animation = styled.div`
-  width: 70%;
-  margin: 0 auto;
 `
 
 const Container = styled.div<{$isDisabled?: boolean}>`
@@ -51,11 +38,6 @@ const Container = styled.div<{$isDisabled?: boolean}>`
 
 const Title = styled.div`
   font-size: 1.6rem;
-  margin-top: 10px;
-`
-
-const SmallTitle = styled.div`
-  font-size: 1.3rem;
   margin-top: 10px;
 `
 
@@ -116,7 +98,6 @@ export function getOpenTriviaIndex(): number {
 
 export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
   const leaderBoardAnimationRef = React.useRef<HTMLDivElement>(null)
-  const prizesAnimationRef = React.useRef<HTMLDivElement>(null)
   const videoOneAnimationRef = React.useRef<HTMLDivElement>(null)
   const videoTwoAnimationRef = React.useRef<HTMLDivElement>(null)
   const forceUpdate = useForceUpdate()
@@ -137,17 +118,6 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
       path: 'leaderboard.json',
     })
   }, [leaderBoardAnimationRef.current])
-
-  React.useEffect(() => {
-    if (!prizesAnimationRef.current) return
-    if (prizesAnimationRef.current.children.length) return
-    lottie.loadAnimation({
-      container: prizesAnimationRef.current,
-      loop: true,
-      autoplay: true,
-      path: 'prizes.json',
-    })
-  }, [prizesAnimationRef.current])
 
   React.useEffect(() => {
     if (!videoOneAnimationRef.current) return
@@ -216,20 +186,9 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
           <Title>¡Juega y acumula puntos aquí!</Title>
         </Option>
       </Row>
-      <SmallRow>
-        <SmallOption onClick={() => onSetPage('leader-board')}>
-          <WhiteCircle>
-            <Animation ref={leaderBoardAnimationRef} />
-          </WhiteCircle>
-          <SmallTitle>Tabla de posiciones</SmallTitle>
-        </SmallOption>
-        <SmallOption onClick={() => onSetPage('prizes')}>
-          <WhiteCircle>
-            <Animation ref={prizesAnimationRef} />
-          </WhiteCircle>
-          <SmallTitle>Premios</SmallTitle>
-        </SmallOption>
-      </SmallRow>
+      <div>
+        <PrizesModal />
+      </div>
       <h2>Conoce más de:</h2>
       <Row>
         <Option onClick={() => onSetPage('video-one')}>

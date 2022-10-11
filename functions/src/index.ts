@@ -9,22 +9,50 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
 const notifyServiceSID = process.env.TWILIO_NOTIFY_SERVICE_SID!;
 
-export const leaderBoard = functions.https.onRequest(
-    async (request, response) => {
-      if (request.method != "GET") {
-        response.send("method should be GET");
-        return;
+export const score = functions.https.onCall(
+    async (data, context) => {
+      const uid = context.auth?.uid;
+      if (!uid) {
+        throw new functions.https.HttpsError(
+            "unauthenticated", "requires auth",
+        );
       }
-      response.set("Access-Control-Allow-Origin", "*");
+      const triviaScores = await admin.firestore()
+          .collection("triviaScores")
+          .where("uid", "==", uid)
+          .get();
+      const triviaTotal = triviaScores
+          .docs
+          .reduce((sum, item) => sum + item.data().score, 0);
+      const pacManScores = await admin.firestore()
+          .collection("pacManScores")
+          .where("uid", "==", uid)
+          .get();
+      const pacManTotal = pacManScores
+          .docs
+          .reduce((sum, item) => sum + item.data().score, 0);
+      return triviaTotal + pacManTotal
+    },
+);
+
+export const leaderBoard = functions.https.onCall(
+    async (data, context) => {
+      await requireAdmin(context);
       const users = await admin.firestore().collection("users").get();
       const triviaScores = await admin.firestore()
           .collection("triviaScores").get();
       const pacManScores = await admin.firestore()
           .collection("pacManScores").get();
-      const table = users.docs.map(
-          (u) => ({uid: u.id, name: u.data().name, score: 0}),
+      const result = users.docs.map(
+          (u) => ({
+            uid: u.id,
+            name: u.data().name,
+            phone: u.data().phone,
+            email: u.data().email,
+            score: 0,
+          }),
       );
-      table.forEach((user) => {
+      result.forEach((user) => {
         const triviaTotal = triviaScores
             .docs
             .filter((score) => score.data().uid == user.uid)
@@ -35,30 +63,16 @@ export const leaderBoard = functions.https.onRequest(
             .reduce((sum, item) => sum + item.data().score, 0);
         user.score = triviaTotal + pacManTotal;
       });
-      const sorted = sortBy(table, (u) => u.score)
-          .filter((u) => u.score > 0).reverse().slice(0, 9);
-      response.send(JSON.stringify(sorted));
+      return sortBy(result, (u) => u.score).reverse();
     },
 );
 
 export const broadcast = functions.https.onCall(
     async (data, context) => {
+      await requireAdmin(context);
       if (!data.body) {
         throw new functions.https.HttpsError(
             "invalid-argument", "body is required",
-        );
-      }
-      const uid = context.auth?.uid;
-      if (!uid) {
-        throw new functions.https.HttpsError(
-            "unauthenticated", "requires auth",
-        );
-      }
-      const userAdminRow = await admin
-          .firestore().collection("admins").doc(uid).get();
-      if (!userAdminRow.exists) {
-        throw new functions.https.HttpsError(
-            "permission-denied", "not an admin",
         );
       }
       const {body} = data;
@@ -79,3 +93,22 @@ export const broadcast = functions.https.onCall(
       return {numberOfUsersMessaged: toBinding.length};
     }
 );
+
+async function requireAdmin(
+    context: functions.https.CallableContext,
+): Promise<boolean> {
+  const uid = context.auth?.uid;
+  if (!uid) {
+    throw new functions.https.HttpsError(
+        "unauthenticated", "requires auth",
+    );
+  }
+  const userAdminRow = await admin
+      .firestore().collection("admins").doc(uid).get();
+  if (!userAdminRow.exists) {
+    throw new functions.https.HttpsError(
+        "permission-denied", "not an admin",
+    );
+  }
+  return true;
+}
