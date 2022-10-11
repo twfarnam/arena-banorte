@@ -2,14 +2,13 @@ import React from 'react'
 import styled from 'styled-components'
 import { intervalToDuration, formatDuration } from 'date-fns'
 import locale from 'date-fns/locale/es'
+import lottie from 'lottie-web'
 import { AppPage } from './app'
 import triviaData  from '../trivia_data'
 // @ts-ignore
 import questionMarks from '../assets/question-marks.png?webp'
 // @ts-ignore
 import game from '../assets/game.png?webp'
-// @ts-ignore
-import star from '../assets/star.svg'
 import useForceUpdate from '../hooks/use_force_update'
 
 const MenuBase = styled.div`
@@ -26,10 +25,24 @@ const Row = styled.div`
   align-items: flex-start;
 `
 
+const SmallRow = styled(Row)`
+  justify-content: space-around;
+  margin: 30px 0;
+`
+
 const Option = styled.div`
   width: 40%;
   position: relative;
   cursor: pointer;
+`
+
+const SmallOption = styled(Option)`
+  width: 20%;
+`
+
+const Animation = styled.div`
+  width: 70%;
+  margin: 0 auto;
 `
 
 const Container = styled.div<{$isDisabled?: boolean}>`
@@ -38,6 +51,11 @@ const Container = styled.div<{$isDisabled?: boolean}>`
 
 const Title = styled.div`
   font-size: 1.6rem;
+  margin-top: 10px;
+`
+
+const SmallTitle = styled.div`
+  font-size: 1.3rem;
   margin-top: 10px;
 `
 
@@ -57,31 +75,15 @@ const Circle = styled.div`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `
 
-const LeaderBoardOption = styled.div`
-  position: relative;
-  margin: 0 auto;
-  cursor: pointer;
-`
-
 const WhiteCircle = styled(Circle)`
-  width: 20%;
+  width: 100%;
+  aspect-ratio: 1;
   position: relative;
   background: white;
   margin: 0 auto;
-`
-
-const StarIcon = styled.img`
-  position: absolute;
-  width: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%)
-`
-
-const LeaderBoardTitle = styled.div`
-  font-size: 1.3rem;
-  margin-top: 10px;
-  white-space: nowrap;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
 `
 
 interface MenuProps {
@@ -113,12 +115,61 @@ export function getOpenTriviaIndex(): number {
 }
 
 export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
+  const leaderBoardAnimationRef = React.useRef<HTMLDivElement>(null)
+  const prizesAnimationRef = React.useRef<HTMLDivElement>(null)
+  const videoOneAnimationRef = React.useRef<HTMLDivElement>(null)
+  const videoTwoAnimationRef = React.useRef<HTMLDivElement>(null)
   const forceUpdate = useForceUpdate()
   const triviaOpenIndex = getOpenTriviaIndex()
   const triviaIsOpen = triviaOpenIndex != -1
   const nextTrivia = triviaData.find(
     q => q.startAt.getTime() > getTime()
   )
+
+  React.useEffect(() => {
+    if (!leaderBoardAnimationRef.current) return
+    if (leaderBoardAnimationRef.current.children.length) return
+    lottie.loadAnimation({
+      container: leaderBoardAnimationRef.current,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'leaderboard.json',
+    })
+  }, [leaderBoardAnimationRef.current])
+
+  React.useEffect(() => {
+    if (!prizesAnimationRef.current) return
+    if (prizesAnimationRef.current.children.length) return
+    lottie.loadAnimation({
+      container: prizesAnimationRef.current,
+      loop: true,
+      autoplay: true,
+      path: 'prizes.json',
+    })
+  }, [prizesAnimationRef.current])
+
+  React.useEffect(() => {
+    if (!videoOneAnimationRef.current) return
+    if (videoOneAnimationRef.current.children.length) return
+    lottie.loadAnimation({
+      container: videoOneAnimationRef.current,
+      loop: true,
+      autoplay: true,
+      path: 'video1.json',
+    })
+  }, [videoOneAnimationRef.current])
+
+  React.useEffect(() => {
+    if (!videoTwoAnimationRef.current) return
+    if (videoTwoAnimationRef.current.children.length) return
+    lottie.loadAnimation({
+      container: videoTwoAnimationRef.current,
+      loop: true,
+      autoplay: true,
+      path: 'video2.json',
+    })
+  }, [videoTwoAnimationRef.current])
 
   React.useEffect(() => {
     const timer = setInterval(forceUpdate, 500)
@@ -165,12 +216,35 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
           <Title>¡Juega y acumula puntos aquí!</Title>
         </Option>
       </Row>
-      <LeaderBoardOption onClick={() => onSetPage('leader-board')}>
-        <WhiteCircle>
-          <StarIcon src={star} />
-        </WhiteCircle>
-        <LeaderBoardTitle>Tabla de posiciones</LeaderBoardTitle>
-      </LeaderBoardOption>
+      <SmallRow>
+        <SmallOption onClick={() => onSetPage('leader-board')}>
+          <WhiteCircle>
+            <Animation ref={leaderBoardAnimationRef} />
+          </WhiteCircle>
+          <SmallTitle>Tabla de posiciones</SmallTitle>
+        </SmallOption>
+        <SmallOption onClick={() => onSetPage('prizes')}>
+          <WhiteCircle>
+            <Animation ref={prizesAnimationRef} />
+          </WhiteCircle>
+          <SmallTitle>Premios</SmallTitle>
+        </SmallOption>
+      </SmallRow>
+      <h2>Conoce más de:</h2>
+      <Row>
+        <Option onClick={() => onSetPage('video-one')}>
+          <WhiteCircle>
+            <div ref={videoOneAnimationRef} />
+          </WhiteCircle>
+          <Title>Crédito hipotecario</Title>
+        </Option>
+        <Option onClick={() => onSetPage('video-two')}>
+          <WhiteCircle>
+            <div ref={videoTwoAnimationRef} />
+          </WhiteCircle>
+          <Title>Seguro hipotecario</Title>
+        </Option>
+      </Row>
     </MenuBase>
   )
 }

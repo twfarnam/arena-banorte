@@ -37,7 +37,6 @@ const Row = styled.div`
   justify-content: stretch;
   margin-top: 10px;
   text-align: justify;
-  text-align-last: justify;
 `
 
 const Left = styled.div`
@@ -51,7 +50,6 @@ const Right = styled.div`
   width: 50%;
   padding-left: 10px;
   text-align: justify;
-  text-align-last: justify;
 `
 
 interface StarryBoxProps {

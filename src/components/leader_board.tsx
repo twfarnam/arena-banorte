@@ -25,6 +25,7 @@ export default function LeaderBoard({ onReturn }: LeaderBoardProps): React.React
   const [error, setError] = React.useState('')
   
   React.useEffect(() => {
+    // const request = fetch('http://localhost:5001/arena-banorte/us-central1/leaderBoard')
     const request = fetch('https://us-central1-arena-banorte.cloudfunctions.net/leaderBoard')
     request
       .then(r => r.json())

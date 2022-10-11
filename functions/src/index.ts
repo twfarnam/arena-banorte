@@ -7,7 +7,6 @@ admin.initializeApp(functions.config().firebase);
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
-// const from = process.env.TWILIO_PHONE_NUMBER!;
 const notifyServiceSID = process.env.TWILIO_NOTIFY_SERVICE_SID!;
 
 export const leaderBoard = functions.https.onRequest(
@@ -23,7 +22,7 @@ export const leaderBoard = functions.https.onRequest(
       const pacManScores = await admin.firestore()
           .collection("pacManScores").get();
       const table = users.docs.map(
-          (s) => ({uid: s.id, name: s.data().name, score: 0}),
+          (u) => ({uid: u.id, name: u.data().name, score: 0}),
       );
       table.forEach((user) => {
         const triviaTotal = triviaScores
@@ -36,7 +35,8 @@ export const leaderBoard = functions.https.onRequest(
             .reduce((sum, item) => sum + item.data().score, 0);
         user.score = triviaTotal + pacManTotal;
       });
-      const sorted = sortBy(table, (u) => u.score).reverse().slice(0, 9);
+      const sorted = sortBy(table, (u) => u.score)
+          .filter((u) => u.score > 0).reverse().slice(0, 9);
       response.send(JSON.stringify(sorted));
     },
 );
@@ -48,26 +48,34 @@ export const broadcast = functions.https.onCall(
             "invalid-argument", "body is required",
         );
       }
-      // const uid = context.auth?.uid;
-      // const hasPermission = uid == "";
-      // if (!hasPermission) {
-      //   throw new functions.https.HttpsError(
-      //       "permission-denied", "not an admin",
-      //   );
-      // }
+      const uid = context.auth?.uid;
+      if (!uid) {
+        throw new functions.https.HttpsError(
+            "unauthenticated", "requires auth",
+        );
+      }
+      const userAdminRow = await admin
+          .firestore().collection("admins").doc(uid).get();
+      if (!userAdminRow.exists) {
+        throw new functions.https.HttpsError(
+            "permission-denied", "not an admin",
+        );
+      }
       const {body} = data;
       const twilio = new Twilio(accountSid, authToken);
-      const notificationOpts = {
-        toBinding: JSON.stringify({
-          binding_type: "sms",
-          address: "+52 55 2708 4244",
-        }),
-        body,
-      };
-      const notification = await twilio.notify
-          .services(notifyServiceSID)
-          .notifications.create(notificationOpts);
-      console.log(notification);
-      return "OK";
+      const users = await admin.firestore().collection("users").get();
+      const toBinding = users.docs.map(
+          (u) => JSON.stringify({binding_type: "sms", address: u.data().phone}),
+      );
+      try {
+        await twilio.notify
+            .services(notifyServiceSID)
+            .notifications.create({toBinding, body});
+      } catch (error) {
+        throw new functions.https.HttpsError(
+            "internal", "Error sending messages :/",
+        );
+      }
+      return {numberOfUsersMessaged: toBinding.length};
     }
 );

@@ -4,28 +4,19 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import '../firebase'
 // @ts-ignore
-import background from '../assets/background.png?w=800&webp'
-// @ts-ignore
-import background2x from '../assets/background.png?w=1600&webp'
-// @ts-ignore
-import ring from '../assets/ring.png?w=800&webp'
-// @ts-ignore
-import ring2x from '../assets/ring.png?w=1600&webp'
+import background from '../assets/background.png?w=1600&webp'
 // @ts-ignore
 import logo from '../assets/logo.png?w=400&webp'
 // @ts-ignore
 import logo2x from '../assets/logo.png?w=800&webp'
-// @ts-ignore
-import lights from '../assets/lights.png?&w=800&webp'
-// @ts-ignore
-import lights2x from '../assets/lights.png?&w=1600&webp'
-// @ts-ignore
 import GlobalStyle from './global_style'
 import RegistrationForm from './registration_form'
 import ComingSoon from './coming_soon'
 import Menu from './menu'
 import Ready from './ready'
 import Game from './game'
+import Video from './video'
+import Prizes from './prizes'
 import Trivia from './trivia'
 import Admin from './admin'
 import LeaderBoard from './leader_board'
@@ -53,6 +44,8 @@ const Frame = styled.div`
   margin: 0 auto;
   position: relative;
   overflow: scroll;
+  background: url("${background}");
+  background-size: cover;
 
   @media (min-width: 700px) {
     aspect-ratio: 9/16;
@@ -73,14 +66,6 @@ const FadeInContainer = styled.div<{ $runAnimation: boolean }>`
   animation-play-state: ${props => props.$runAnimation ? 'running' : 'paused'}
 `
 
-const Ring = styled.img`
-  display: block;
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  z-index: -1;
-`
-
 const Spacer = styled.div`
   flex-grow: 1;
 `
@@ -92,33 +77,21 @@ const Terms = styled.a`
   text-decoration: none;
 `
 
-const Background = styled.img`
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: -2;
-`
-
-const Lights = styled.img`
-  display: block;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: -2;
-`
-
-export type AppPage = 'ready' | 'menu' | 'trivia' | 'game' | 'leader-board'
+export type AppPage = 
+  | 'ready'
+  | 'menu'
+  | 'trivia'
+  | 'game'
+  | 'leader-board'
+  | 'video-one'
+  | 'video-two'
+  | 'prizes'
  
 export default function App(): React.ReactElement {
   const [page, setPage] = React.useState<AppPage>('menu')
   const [registration, setRegistration] = React.useState<Record<string, any>>()
   const [loading, setLoading] = React.useState(true)
   const [logoLoaded, setLogoLoaded] = React.useState(false)
-  const [ringLoaded, setRingLoaded] = React.useState(false)
-  const [backgroundLoaded, setBackgroundLoaded] = React.useState(false)
-  const [lightsLoaded, setLightsLoaded] = React.useState(false)
 
   React.useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
@@ -130,7 +103,6 @@ export default function App(): React.ReactElement {
     })
   }, [])
   
-  const allLoaded = [ logoLoaded, ringLoaded, backgroundLoaded, lightsLoaded ].every(b => b)
   if (window.location.pathname == '/admin') {
     return (
       <ThemeProvider theme={theme}>
@@ -145,12 +117,12 @@ export default function App(): React.ReactElement {
         <GlobalStyle />
         <Frame>
           <Logo
-            $runAnimation={allLoaded}
+            $runAnimation={logoLoaded}
             onLoad={() => setLogoLoaded(true)}
             srcSet={`${logo} 1x, ${logo2x} 2x`}
           />
           { !loading &&
-            <FadeInContainer $runAnimation={allLoaded}>
+            <FadeInContainer $runAnimation={logoLoaded}>
               { (() => {
                   if (!registration) {
                     return <RegistrationForm onSubmit={() => { setPage('ready'); setRegistration({}); }} />
@@ -166,6 +138,12 @@ export default function App(): React.ReactElement {
                     return <Trivia onReturn={() => setPage('menu')} />
                   } else if (page == 'leader-board') {
                     return <LeaderBoard  onReturn={() => setPage('menu')} />
+                  } else if (page == 'video-one') {
+                    return <Video src="/video-one.mp4" onReturn={() => setPage('menu')} />
+                  } else if (page == 'video-two') {
+                    return <Video src="/video-two.mp4" onReturn={() => setPage('menu')} />
+                  } else if (page == 'prizes') {
+                    return <Prizes onReturn={() => setPage('menu')} />
                   }
                 })()
               }
@@ -173,18 +151,6 @@ export default function App(): React.ReactElement {
           }
           <Spacer />
           <Terms href="#">Términos y Condiciones</Terms>
-          <Ring
-            onLoad={() => setRingLoaded(true)}
-            srcSet={`${ring} 1x, ${ring2x} 2x`}
-          />
-          <Background
-            onLoad={() => setBackgroundLoaded(true)}
-            srcSet={`${background} 1x, ${background2x} 2x`}
-          />
-          <Lights
-            onLoad={() => setLightsLoaded(true)}
-            srcSet={`${lights} 1x, ${lights2x} 2x`}
-          />
         </Frame>
       </AppBase>
     </ThemeProvider>

@@ -34,7 +34,7 @@ export default createGlobalStyle`
     color: inherit;
   }
 
-  h1 {
+  h1, h2 {
     font-weight: normal;
   }
 

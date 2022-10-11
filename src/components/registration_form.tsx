@@ -106,8 +106,6 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
     setIsLoading(true)
     setError('')
     setPhoneError('')
-    let cleanPhone = phone.replace(/[^+0-9]/g, '')
-    if (!cleanPhone.startsWith('+')) cleanPhone = '+52' + cleanPhone
     if (recaptchaRef.current!.children.length) {
       const newElement = document.createElement('div')
       recaptchaRef.current!.replaceWith(newElement)
@@ -121,7 +119,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
     )
     try {
       setConfirmationResult(
-        await signInWithPhoneNumber(getAuth(), cleanPhone, verifier)
+        await signInWithPhoneNumber(getAuth(), formatPhoneNumber(phone), verifier)
       )
       setVerificationSentTime(Date.now())
     } catch (error) {
@@ -177,6 +175,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
         email,
         name,
         office,
+        phone: formatPhoneNumber(phone),
         createdAt: serverTimestamp(),
       })
       await updateProfile(getAuth().currentUser!, { displayName: name })
@@ -286,3 +285,10 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
     )
   }
 }
+
+function formatPhoneNumber(phone: string) {
+  phone.replace(/[^+0-9]/g, '')
+  if (!phone.startsWith('+')) phone = '+52' + phone
+  return phone
+}
+

@@ -27,6 +27,7 @@ export default function Admin(): React.ReactElement | null {
   const [hasPermission, setHasPermission] = React.useState(false)
   const [body, setBody] = React.useState('')
   const [error, setError] = React.useState('')
+  const [result, setResult] = React.useState('')
 
   React.useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
@@ -46,7 +47,10 @@ export default function Admin(): React.ReactElement | null {
     try {
       // connectFunctionsEmulator(getFunctions(), "localhost", 5001);
       const result = await httpsCallable(getFunctions(), 'broadcast')({ body })
-      console.log('result', result)
+      // @ts-ignore
+      setResult(result.data.numberOfUsersMessaged)
+      console.log('result', result.data.numberOfUsersMessaged)
+
       setBody('')
     } catch (error: any) {
       console.log(error)
@@ -70,6 +74,7 @@ export default function Admin(): React.ReactElement | null {
         onClick={onClickSend}>
         Broadcast SMS
       </Button>
+      { result && <h1>Sent {result} messages</h1> }
     </AdminBase>
   )
 }

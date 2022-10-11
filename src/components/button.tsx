@@ -6,6 +6,7 @@ export default styled.button<{ $isLoading?: boolean }>`
   line-height: 1;
   color: inherit;
   cursor: pointer;
+  user-select: none;
   padding: 18px 20px;
   line-height: 1;
   background: linear-gradient(180deg, #5F5291 0%, #312A4E 100%);
