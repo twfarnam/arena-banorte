@@ -2,7 +2,7 @@ import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth'
 import '../firebase'
 import VideoOverlay from './video_overlay'
 // @ts-ignore
@@ -102,10 +102,12 @@ export default function App(): React.ReactElement {
 
   React.useEffect(() => {
     onAuthStateChanged(getAuth(), async (user) => {
-      if (user) {
-        const snap = await getDoc(doc(getFirestore(), "users", user.uid));
-        setRegistration(snap.data())
+      if (!user) {
+        await signInAnonymously(getAuth())
+        return
       }
+      const snap = await getDoc(doc(getFirestore(), "users", user.uid));
+      setRegistration(snap.data())
       setLoading(false)
       // connectFunctionsEmulator(getFunctions(), "localhost", 5001);
       const result = await httpsCallable(getFunctions(), 'score')()
