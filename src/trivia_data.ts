@@ -10,9 +10,9 @@ export interface TriviaQuestion {
 }
 
 export default [
-  // Trivia 1 Miércoles 9:00 am 
+  // Trivia 1 Miércoles 12pm
   {
-    startAt: new Date(1665583200000),
+    startAt: new Date(1665594000000),
     questions: [
       {
         prompt: '¿Cuál es el nombre de nuestro Producto?',
@@ -34,9 +34,9 @@ export default [
       }
     ],
   },
-  // Trivia 2 Miércoles 3:00 pm 
+  // Trivia 2 Miércoles 5:00 pm 
   {
-    startAt: new Date(1665604800000),
+    startAt: new Date(1665612000000),
     questions: [
       {
         prompt: '¿Cuál es el nombre de nuestra plataforma online?',
@@ -82,9 +82,9 @@ export default [
       },
     ],
   },
-  // Trivia 4 Jueves 9:00 am 
+  // Trivia 4 Jueves 12pm 
   {
-    startAt: new Date(1665669600000),
+    startAt: new Date(1665680400000),
     questions: [
       {
         prompt: '¿Cuál es el costo de la comisión de apertura para el destino de Mejora de Hipoteca?',
@@ -106,9 +106,9 @@ export default [
       },
     ],
   },
-  // Trivia 5 Jueves 3:00 pm 
+  // Trivia 5 Jueves 5:00 pm 
   {
-    startAt: new Date(1665691200000),
+    startAt: new Date(1665698400000),
     questions: [
       {
         prompt: '¿Cuál es el periodo mínimo que debes considerar para colocar una Mejora de Hipoteca, después de la Originación inicial, cuando el destino origen es Adquisición?',
