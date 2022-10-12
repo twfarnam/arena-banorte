@@ -13,7 +13,6 @@ import logo from '../assets/logo.png?w=400&webp'
 import logo2x from '../assets/logo.png?w=800&webp'
 import GlobalStyle from './global_style'
 import RegistrationForm from './registration_form'
-import ComingSoon from './coming_soon'
 import Menu from './menu'
 import Ready from './ready'
 import Game from './game'
@@ -151,10 +150,8 @@ export default function App(): React.ReactElement {
                         onSubmit={onSubmitRegistration}
                       />
                     )
-                  } else if (page == 'ready' && window.location.search.includes('withGame')) {
+                  } else if (page == 'ready') {
                     return <Ready onPlay={() => setPage('menu')} />
-                  } else if (page == 'ready' || !window.location.search.includes('withGame')) {
-                    return <ComingSoon />
                   } else if (page == 'menu') {
                     return <Menu onSetPage={setPage} />
                   } else if (page == 'game') {
