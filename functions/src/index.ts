@@ -49,6 +49,7 @@ export const leaderBoard = functions.https.onCall(
             name: u.data().name,
             phone: u.data().phone,
             email: u.data().email,
+            office: u.data().office,
             score: 0,
           }),
       );

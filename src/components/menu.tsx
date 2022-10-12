@@ -201,7 +201,7 @@ export default function Menu({ onSetPage }: MenuProps): React.ReactElement  {
           <WhiteCircle>
             <div ref={videoTwoAnimationRef} />
           </WhiteCircle>
-          <Title>Seguros Banorted</Title>
+          <Title>Seguros Banorte</Title>
         </Option>
       </Row>
     </MenuBase>

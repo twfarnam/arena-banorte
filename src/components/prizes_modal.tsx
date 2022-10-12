@@ -21,6 +21,8 @@ import xbox from '../assets/xbox.png?webp'
 import watch from '../assets/watch.jpeg?webp'
 // @ts-ignore
 import tv from '../assets/tv.jpeg?webp'
+// @ts-ignore
+import car from '../assets/car.png?webp'
 
 const PrizesBase = styled.div`
   text-align: center;
@@ -56,6 +58,7 @@ const Modal = styled.div`
   background: rgba(0, 0, 0, 0.9);
   z-index: 10;
   padding: 60px 10px 30px;
+  overscroll-behavior: contain;
 `
 
 const Close = styled.div`
@@ -64,6 +67,12 @@ const Close = styled.div`
   right: 20px;
   font-size: 50px;
   cursor: pointer;
+`
+
+const Car = styled.img`
+  display: block;
+  width: 80%;
+  margin: 0 auto;
 `
 
 const PrizeContainer = styled.div`
@@ -96,19 +105,20 @@ const Image  = styled.img`
 `
 
 const prizes: { [name: string]: string } = {
+  'Consola PlayStation 5 825gb': playstation,
   'Apple Watch Series 8': watch,
-  'Pantalla LG Smart TV de 50 pulgadas 4k': tv,
-  'Certificado de regalo': giftcard,
-  'Cafetera nespresso essenza mini': espreso,
-  'Audífonos sony inalámbricos': headphones,
-  'Minibalón al rihla mundial fifa 2022': minibalon,
-  'Xbox series s': xbox,
-  'Playstation 5': playstation,
-  'Vaso térmico rojo': cup,
+  'Pantalla LG Smart TV 50"': tv,
+  'Consola Xbox Series S 512gb': xbox,
+  'Cafetera Nespresso Essenza Mini': espreso,
+  'Certificados Amazon $1,000': giftcard,
+  'Audífonos Sony inalámbricos': headphones,
+  'Minibalón al rihla 2022': minibalon,
   'Maleta adidas banorte': maleta,
+  'Vaso térmico rojo': cup,
 }
 
 export default function PrizesModal(): React.ReactElement  {
+  const closeRef = React.useRef<HTMLDivElement>(null)
   const [showModal, setShowModal] = React.useState<boolean>(false)
   const iconAnimationRef = React.useRef<HTMLDivElement>(null)
 
@@ -123,9 +133,14 @@ export default function PrizesModal(): React.ReactElement  {
     })
   }, [iconAnimationRef.current])
 
+  function onClickShowModal() {
+    setShowModal(true)
+    setTimeout(() => closeRef.current?.scrollIntoView())
+  }
+
   return (
     <PrizesBase>
-      <Icon onClick={() => setShowModal(true)}>
+      <Icon onClick={onClickShowModal}>
         <IconCircle>
           <Animation ref={iconAnimationRef} />
         </IconCircle>
@@ -133,8 +148,12 @@ export default function PrizesModal(): React.ReactElement  {
       </Icon>
       { showModal &&
         <Modal>
-          <Close onClick={() => setShowModal(false)}>&times;</Close>
-          <h1>Concursa por los siguientes premios:</h1>
+          <Close ref={closeRef} onClick={() => setShowModal(false)}>&times;</Close>
+          <h1>Juega para ganar uno de los siguientes premios:</h1>
+          <Car src={car} />
+          Camioneta Honda HRV HONDA 2023
+          <br/>
+          Puntos Arena Banorte + Rifa 
           <PrizeContainer>
             { Object.keys(prizes).map(text => (
               <Prize>

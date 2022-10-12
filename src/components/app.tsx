@@ -115,6 +115,11 @@ export default function App(): React.ReactElement {
     })
   }, [])
 
+  function onSubmitRegistration() {
+    setPage('ready');
+    setRegistration({});
+  }
+
   if (window.location.pathname == '/admin') {
     return (
       <ThemeProvider theme={theme}>
@@ -129,7 +134,7 @@ export default function App(): React.ReactElement {
         <GlobalStyle />
         <Frame>
           {!videoDone && <VideoOverlay onDone={() => setVideoDone(true)} />}
-          {score > 0 && <Score>Tienes {score} puntos</Score>}
+          {score > 0 && <Score>{score} puntos acumulados</Score>}
           <Logo
             $runAnimation={videoDone}
             srcSet={`${logo} 1x, ${logo2x} 2x`}
@@ -137,8 +142,15 @@ export default function App(): React.ReactElement {
           { !loading &&
             <FadeInContainer $runAnimation={videoDone}>
               { (() => {
-                  if (!registration) {
-                    return <RegistrationForm onSubmit={() => { setPage('ready'); setRegistration({}); }} />
+                  if (page == 'terms') {
+                    return <Terms onReturn={() => setPage('menu')} />
+                  } else if (!registration) {
+                    return  (
+                      <RegistrationForm
+                        onShowTerms={() => setPage('terms')}
+                        onSubmit={onSubmitRegistration}
+                      />
+                    )
                   } else if (page == 'ready' && window.location.search.includes('withGame')) {
                     return <Ready onPlay={() => setPage('menu')} />
                   } else if (page == 'ready' || !window.location.search.includes('withGame')) {
@@ -163,15 +175,15 @@ export default function App(): React.ReactElement {
                     return <Video src="/video-one.mp4" onReturn={() => setPage('menu')} />
                   } else if (page == 'video-two') {
                     return <Video src="/video-two.mp4" onReturn={() => setPage('menu')} />
-                  } else if (page == 'terms') {
-                    return <Terms onReturn={() => setPage('menu')} />
                   }
                 })()
               }
             </FadeInContainer>
           }
           <Spacer />
-          <TermsLink onClick={() => setPage('terms')}>Términos y Condiciones</TermsLink>
+          { !['terms','registration'].includes(page) &&
+            <TermsLink onClick={() => setPage('terms')}>Términos y Condiciones</TermsLink>
+          }
         </Frame>
       </AppBase>
     </ThemeProvider>

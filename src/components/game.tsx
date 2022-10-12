@@ -179,8 +179,8 @@ export default observer(function Game({ onPoints, onReturn }: GameProps): React.
         <LeftIcon src={game} />
         <RightIcon src={game} />
         <StyledStarryBox
-          top="Acumula la mayor cantidad de puntos posible"
-          bottom="Utiliza los controles para guiar a tu luchador y comer la mayor cantidad de puntos posibles"
+          top="Utiliza los controles para guiar tu pacman y comer la mayor cantidad de puntos."
+          bottom="Cada victoria te otorgará 50 puntos. ¡Acumula los más posibles!"
         />
         <Button onClick={() => { setPage('playing'); setTimeout(resizeGame); }}>
           Comenzar a jugar
@@ -195,7 +195,7 @@ export default observer(function Game({ onPoints, onReturn }: GameProps): React.
         <StyledStarryBox
           top={<GameOverHeader>Obtuviste:</GameOverHeader>}
           left={<GameOverPoints>{score} puntos</GameOverPoints>}
-          right="Mientras más juegues, más posibilidades tienes"
+          right="Mientras más juegues, más posibilidades tienes de ganar."
         />
         <Button onClick={() => { setPage('playing'); store.resetGame(); }}>
           Volver a jugar

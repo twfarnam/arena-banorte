@@ -152,7 +152,7 @@ export default function Trivia({ onPoints, onReturn }: TriviaProps): React.React
         <StyledStarryBox
           top="Obtuviste:"
           left={<Score>{points} puntos</Score>}
-          right="Mientras más juegues, más posibilidades tienes"
+          right="Mientras más juegues, más posibilidades tienes de ganar."
         />
         <ExitButton onReturn={onReturn} />
       </TriviaBase>
@@ -164,8 +164,8 @@ export default function Trivia({ onPoints, onReturn }: TriviaProps): React.React
         <RightIcon src={questionMarks} />
         <StyledStarryBox
           top={`Trivia no. ${triviaDataIndex + 1}`}
-          left="Mientras más preguntas acertadas contestes, generas más puntos"
-          right="Contesta lo más rápido posible, esto también te genera más puntos"
+          left="Con cada trivia contestada correctamente podrás acumular hasta 1,000 puntos"
+          right="Entre más rápido contestes correctamente, ¡mayor cantidad de puntos!"
         />
         <Button onClick={onClickStart}>
           Comenzar a jugar

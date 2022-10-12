@@ -33,6 +33,12 @@ const StyledStarryBox = styled(StarryBox)`
   --top-font-size: 1.2em;
 `
 
+const TermsLink = styled.div`
+  margin-bottom: 40px;
+  font-size: 1.2em;
+  cusror: pointer;
+`
+
 const Row = styled.div`
   display: flex;
   flex-flow: row nowrap;
@@ -77,10 +83,11 @@ const SelectButton = styled(Button)`
 `
 
 interface RegistrationFormProps {
+  onShowTerms: () => void
   onSubmit: () => void
 }
 
-export default function RegistrationForm({ onSubmit }: RegistrationFormProps): React.ReactElement  {
+export default function RegistrationForm({ onShowTerms, onSubmit }: RegistrationFormProps): React.ReactElement  {
   const [phone, setPhone] = React.useState('')
   const [phoneError, setPhoneError] = React.useState('')
   const [verificationCode, setVerificationCode] = React.useState('')
@@ -94,7 +101,6 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
   const [isVerified, setIsVerified] = React.useState<boolean>(false)
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState('')
-  // const [verifier, setVerifier] = React.useState<RecaptchaVerifier>()
   const [confirmationResult, setConfirmationResult] = React.useState<ConfirmationResult>()
   const [verificationSentTime, setVerificationSentTime] = React.useState<number>()
   const recaptchaRef = React.useRef<HTMLDivElement>(null)
@@ -220,12 +226,13 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
           <div ref={recaptchaRef}></div>
           <Button $isLoading={isLoading}>Enviar</Button>
         </Row>
+        <TermsLink onClick={onShowTerms}>Consulta Términos y Condiciones</TermsLink>
         <PrizesModal />
         { phoneError && <Error>{phoneError}</Error>}
       </RegistrationFormBase>
     )
   } else {
-    const timeRemaining = 0 // 30000 - Date.now() + verificationSentTime!
+    const timeRemaining = 30000 - Date.now() + verificationSentTime!
     if (timeRemaining > 1) setTimeout(forceUpdate, 500)
     return (
       <RegistrationFormBase onSubmit={onSubmitRegistrationForm}>
@@ -254,7 +261,7 @@ export default function RegistrationForm({ onSubmit }: RegistrationFormProps): R
         <Label>E introduzcas tu nombre y tu correo:</Label>
         <Input 
           autoFocus={isVerified}
-          placeholder="Escribe aquí tu nombre" 
+          placeholder="Escribe aquí tu nombre completo" 
           autoComplete="name"
           value={name}
           onChange={event => { setName(event.target.value); setNameError('') }}

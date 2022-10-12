@@ -106,6 +106,7 @@ export default function Admin(): React.ReactElement | null {
                 <td>User</td>
                 <td>Email</td>
                 <td>Phone</td>
+                <td>Office</td>
                 <td>Score</td>
               </tr>
             </thead>
@@ -115,6 +116,7 @@ export default function Admin(): React.ReactElement | null {
                   <td>{u.name}</td>
                   <td>{u.phone}</td>
                   <td>{u.email}</td>
+                  <td>{u.office}</td>
                   <td>{u.score.toLocaleString()}</td>
                 </tr>)
               }
