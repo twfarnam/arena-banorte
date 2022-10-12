@@ -82,9 +82,9 @@ export default [
       },
     ],
   },
-  // Trivia 4 Jueves 12pm 
+  // Trivia 4 Jueves 10am
   {
-    startAt: new Date(1665680400000),
+    startAt: new Date(1665673200000),
     questions: [
       {
         prompt: '¿Cuál es el costo de la comisión de apertura para el destino de Mejora de Hipoteca?',
@@ -106,9 +106,9 @@ export default [
       },
     ],
   },
-  // Trivia 5 Jueves 5:00 pm 
+  // Trivia 5 Jueves 3pm 
   {
-    startAt: new Date(1665698400000),
+    startAt: new Date(1665691200000),
     questions: [
       {
         prompt: '¿Cuál es el periodo mínimo que debes considerar para colocar una Mejora de Hipoteca, después de la Originación inicial, cuando el destino origen es Adquisición?',

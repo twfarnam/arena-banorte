@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import triviaData, { TriviaQuestion, TriviaSet } from '../trivia_data'
-import isEqual from 'lodash/isEqual'
 import { collection, addDoc, getFirestore, serverTimestamp } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 // @ts-ignore
@@ -130,6 +129,8 @@ export default function Trivia({ onPoints, onReturn }: TriviaProps): React.React
         try {
           const score = calculateScore(triviaSet, allAnswers, Date.now() - startedAt!)
           onPoints(score)
+          return
+          asdf()
           await addDoc(collection(getFirestore(), 'triviaScores'), {
             score,
             triviaSet: triviaDataIndex,
@@ -195,18 +196,21 @@ export default function Trivia({ onPoints, onReturn }: TriviaProps): React.React
 // 61 en adelante: 500 
 const fiveYears = 5 * 365 * 24 * 60 * 60 * 1000
 const scoringMatrix = [
-  [10999, 1000],
-  [20999, 900],
-  [30999, 800],
-  [60999, 700],
-  [fiveYears, 500],
+  [10999, 500],
+  [20999, 450],
+  [30999, 400],
+  [60999, 350],
+  [fiveYears, 250],
 ]
 function calculateScore(triviaSet: TriviaSet, answers: number[], duration: number) {
-  const correct = isEqual(
-    triviaSet.questions.map((q: TriviaQuestion) => q.answer),
-    answers,
-  )
-  if (!correct) return 0
-  const rewardIndex = scoringMatrix.findIndex(([millisecond]) => duration <= millisecond)
-  return scoringMatrix[rewardIndex][1]
+  return triviaSet.questions.reduce((score: number, question: TriviaQuestion, index: number) => {
+    if (question.answer == answers[index]) {
+      return (
+        score +
+        (scoringMatrix.find(([millisecond]) => duration <= millisecond)?.[1] || 0)
+      )
+    } else {
+      return score
+    }
+  }, 0)
 }
