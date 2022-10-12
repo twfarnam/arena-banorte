@@ -49,13 +49,10 @@ export default function VideoOverlay({ onDone }: VideoOverlayProps): React.React
       setHasPlayed(true)
     })
     playerRef.current.addEventListener('ended', () => {
-      console.log('here 1')
       if (playerRef.current?.src.endsWith('/video-one.mp4')) {
-      console.log('here 2')
         playerRef.current!.currentTime = 0
         setTimeout(() => playerRef.current!.src = '/video-two.mp4')
       } else {
-      console.log('here 3')
         onDone()
       }
     })

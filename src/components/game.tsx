@@ -148,7 +148,8 @@ export default observer(function Game({ onPoints, onReturn }: GameProps): React.
 
   React.useEffect(() => {
     if (!store.game.gameOver) return
-    const points = store.game.pacMan.alive ? 50 : 0
+    const didWin = store.game.maze.pills.every(row => row.every(p => p == 0))
+    const points = didWin ? 50 : 0
     onPoints(points)
     setScore(score)
     addDoc(collection(getFirestore(), 'pacManScores'), {
