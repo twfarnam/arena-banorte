@@ -129,8 +129,6 @@ export default function Trivia({ onPoints, onReturn }: TriviaProps): React.React
         try {
           const score = calculateScore(triviaSet, allAnswers, Date.now() - startedAt!)
           onPoints(score)
-          return
-          asdf()
           await addDoc(collection(getFirestore(), 'triviaScores'), {
             score,
             triviaSet: triviaDataIndex,
