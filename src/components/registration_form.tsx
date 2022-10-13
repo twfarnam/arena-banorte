@@ -158,7 +158,7 @@ export default function RegistrationForm({ onShowTerms, onSubmit }: Registration
           setPhoneError('')
         }}
         inputMode="tel"
-        placeholder="Escribe aquí tu número telefónico" 
+        placeholder="Escribe aquí tu número celular" 
         autoComplete="tel"
         $hasError={!!phoneError}
       />
