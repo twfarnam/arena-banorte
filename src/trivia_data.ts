@@ -154,9 +154,9 @@ export default [
       },
     ],
   },
-  // Trivia 7 Viernes 9:00 am
+  // Trivia 7 Viernes 10am
   {
-    startAt: new Date(1665756000000),
+    startAt: new Date(1665759600000),
     questions: [
       {
         prompt: '¿Cuántas veces ha llegado México al quinto partido?',
