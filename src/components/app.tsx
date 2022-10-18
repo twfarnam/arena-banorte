@@ -100,7 +100,7 @@ const menuPage = window.location.search.includes('withGame') ? 'menu' : 'end-men
 export default function App(): React.ReactElement {
   const [page, setPage] = React.useState<AppPage>(menuPage)
   const [registration, setRegistration] = React.useState<Record<string, any>>()
-  const [videoDone, setVideoDone] = React.useState<boolean>(false)
+  const [videoDone, setVideoDone] = React.useState<boolean>(true)
   const [loading, setLoading] = React.useState(true)
   const [score, setScore] = React.useState(0)
 
