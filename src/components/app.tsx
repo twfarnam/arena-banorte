@@ -14,6 +14,7 @@ import logo2x from '../assets/logo.png?w=800&webp'
 import GlobalStyle from './global_style'
 import RegistrationForm from './registration_form'
 import Menu from './menu'
+import EndMenu from './end_menu'
 import Ready from './ready'
 import Game from './game'
 import Terms from './terms'
@@ -92,9 +93,12 @@ export type AppPage =
   | 'video-two'
   | 'prizes'
   | 'terms'
- 
+  | 'end-menu'
+
+const menuPage = window.location.search.includes('withGame') ? 'menu' : 'end-menu'
+
 export default function App(): React.ReactElement {
-  const [page, setPage] = React.useState<AppPage>('menu')
+  const [page, setPage] = React.useState<AppPage>(menuPage)
   const [registration, setRegistration] = React.useState<Record<string, any>>()
   const [videoDone, setVideoDone] = React.useState<boolean>(false)
   const [loading, setLoading] = React.useState(true)
@@ -143,8 +147,10 @@ export default function App(): React.ReactElement {
           { !loading &&
             <FadeInContainer $runAnimation={videoDone}>
               { (() => {
-                  if (page == 'terms') {
-                    return <Terms onReturn={() => setPage('menu')} />
+                  if (page == 'end-menu' && !window.location.search.includes('withGame')) {
+                    return <EndMenu />
+                  } else if (page == 'terms') {
+                    return <Terms onReturn={() => setPage(menuPage)} />
                   } else if (!registration) {
                     return  (
                       <RegistrationForm
